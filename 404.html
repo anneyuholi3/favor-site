@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>404 · 页面走丢了 | Favor</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet" />
+<style>
+  :root { --bg:#08080C; --bg2:#0D0B1A; --primary:#A855F7; --primary-soft:#C084FC; --text:#ECE9F5; --muted:#A89FC4; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body {
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    background-color:var(--bg); color:var(--text); min-height:100vh;
+    background-image:
+      radial-gradient(circle at 10% 50%, rgba(168,85,247,.15) 0%, transparent 50%),
+      radial-gradient(circle at 90% 80%, rgba(59,130,246,.12) 0%, transparent 45%),
+      radial-gradient(circle at 50% 100%, rgba(236,72,153,.08) 0%, transparent 40%);
+    background-attachment:fixed;
+    display:flex; align-items:center; justify-content:center; overflow-x:hidden;
+    position:relative;
+  }
+  body::before {
+    content:""; position:absolute; width:420px; height:420px; border-radius:50%;
+    background:radial-gradient(circle, rgba(168,85,247,.28) 0%, transparent 65%);
+    filter:blur(20px); z-index:0;
+  }
+  .box { position:relative; z-index:1; text-align:center; padding:40px 20px; }
+  .code { font-family:"ZCOOL KuaiLe",sans-serif; font-size:120px; color:var(--primary); line-height:1;
+    text-shadow:0 0 30px rgba(168,85,247,.5); }
+  h1 { font-family:"ZCOOL KuaiLe",sans-serif; font-size:34px; margin:10px 0 16px; }
+  p { color:var(--muted); margin-bottom:28px; }
+  a {
+    display:inline-block; background:linear-gradient(135deg,var(--primary),var(--primary-soft)); color:#fff;
+    padding:12px 30px; border-radius:999px; font-family:"ZCOOL KuaiLe",sans-serif;
+    text-decoration:none; box-shadow:0 10px 30px rgba(168,85,247,.35);
+    transition:transform .15s ease;
+  }
+  a:hover { transform:translateY(-2px); box-shadow:0 14px 36px rgba(168,85,247,.5); }
+</style>
+</head>
+<body>
+  <div class="box">
+    <div class="code">404</div>
+    <h1>页面走丢啦</h1>
+    <p>这个链接可能过期了，或者从来就没存在过 🤔</p>
+    <a href="/">回首页看看</a>
+  </div>
+</body>
+</html>
