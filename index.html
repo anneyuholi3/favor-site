@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Favor · 全栈转 AI 实战派</title>
+  <meta name="description" content="Favor 的个人站：10 年后端、4 年 Vue 前端，正在转大模型应用开发工程师。专注 RAG、Agent 等大模型应用的落地。" />
+  <meta name="author" content="Favor" />
+  <meta name="theme-color" content="#0D0B1A" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="canonical" href="https://favor-dke.pages.dev/" />
+  <!-- Open Graph / 社交分享预览 -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Favor 的个人站" />
+  <meta property="og:title" content="Favor · 全栈转 AI 实战派" />
+  <meta property="og:description" content="10 年后端、4 年 Vue 前端，正在转大模型应用开发工程师。专注 RAG、Agent 等大模型应用落地。" />
+  <meta property="og:url" content="https://favor-dke.pages.dev/" />
+  <meta property="og:image" content="https://favor-dke.pages.dev/og-image.png" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Favor · 全栈转 AI 实战派" />
+  <meta name="twitter:description" content="10 年后端、4 年 Vue 前端，正在转大模型应用开发工程师。" />
+  <meta name="twitter:image" content="https://favor-dke.pages.dev/og-image.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #08080C;
+    --bg2: #0D0B1A;
+    --primary: #A855F7;
+    --primary-soft: #C084FC;
+    --accent: #3B82F6;
+    --magenta: #EC4899;
+    --tag-bg: rgba(168, 85, 247, 0.18);
+    --tag-text: #F3E8FF;
+    --text: #ECE9F5;
+    --muted: #A89FC4;
+    --line: rgba(168, 85, 247, 0.12);
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+    background-color: #08080C;
+    background-image:
+      radial-gradient(circle at 10% 45%, rgba(168, 85, 247, 0.16) 0%, transparent 55%),
+      radial-gradient(circle at 92% 35%, rgba(59, 130, 246, 0.13) 0%, transparent 52%),
+      radial-gradient(circle at 50% 100%, rgba(236, 72, 153, 0.09) 0%, transparent 45%);
+    background-attachment: fixed;
+    animation: auraFlow 12s ease-in-out infinite alternate;
+    color: var(--text);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  @keyframes auraFlow {
+    0% { background-position: 0% 0%, 0% 0%, 0% 0%; }
+    100% { background-position: 5% 10%, -5% 5%, 2% -5%; }
+  }
+
+  /* 粒子连线背景 */
+  #bg-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /* 鼠标探照灯（跟随光标的大光晕） */
+  #spotlight {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(circle at var(--x, 50%) var(--y, 50%),
+      rgba(168, 85, 247, 0.12) 0%,
+      rgba(59, 130, 246, 0.06) 35%,
+      transparent 65%);
+    transition: background 0.12s ease-out;
+  }
+
+  /* 打字机光标 */
+  .typing-cursor {
+    display: inline-block;
+    width: 3px;
+    height: 1.1em;
+    background: var(--primary);
+    margin-left: 3px;
+    vertical-align: -2px;
+    animation: caret 1s step-end infinite;
+  }
+  @keyframes caret { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+  /* 标签下方轮播打字行 */
+  .typed-line {
+    margin: 16px 0;
+    min-height: 1.4em;
+    font-family: ui-monospace, "JetBrains Mono", "SFMono-Regular", Consolas, "PingFang SC", monospace;
+    font-size: 15px;
+    color: var(--primary-soft);
+    letter-spacing: 0.03em;
+  }
+  h1, h2, h3, .font-title {
+    font-family: "ZCOOL KuaiLe", -apple-system, "PingFang SC", sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+  }
+  a { color: var(--primary); text-decoration: none; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+
+  /* ===== 首屏 ===== */
+  .hero {
+    position: relative;
+    text-align: center;
+    padding: 92px 20px 72px;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: "";
+    position: absolute;
+    top: -120px; left: 50%;
+    width: 520px; height: 520px;
+    transform: translateX(-50%);
+    background:
+      radial-gradient(circle, rgba(168, 85, 247, 0.30) 0%, rgba(168, 85, 247, 0) 65%),
+      radial-gradient(circle at 70% 30%, rgb(22 28 39 / 22%) 0%, rgb(220 229 245 / 0%) 60%);
+    z-index: 0;
+  }
+  .hero > * { position: relative; z-index: 1; }
+  .hero::after {
+    content: "";
+    position: absolute; inset: 0; z-index: 0;
+    background-image: radial-gradient(rgba(168,85,247,0.16) 1.5px, transparent 1.6px);
+    background-size: 26px 26px;
+    -webkit-mask-image: radial-gradient(circle at 50% 38%, #000 0%, transparent 88%);
+    mask-image: radial-gradient(circle at 50% 38%, #000 0%, transparent 88%);
+    pointer-events: none;
+  }
+  .orb {
+    position: absolute; z-index: 0; border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #C084FC, rgba(59,130,246,0.20));
+    box-shadow: 0 0 18px rgba(168,85,247,0.5);
+    animation: float 7s ease-in-out infinite;
+    pointer-events: none;
+  }
+  .avatar {
+    width: 92px; height: 92px; margin: 0 auto 22px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #A855F7, #3B82F6);
+    color: #fff;
+    font-family: "ZCOOL KuaiLe", sans-serif;
+    font-size: 44px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 10px 30px rgba(168,85,247,0.35);
+  }
+  .hero h1 { font-size: 52px; color: var(--primary); margin-bottom: 14px; }
+  .hero .identity { font-size: 19px; color: var(--text); margin-bottom: 18px; }
+  .tag {
+    display: inline-block;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    padding: 6px 18px;
+    border-radius: 999px;
+    font-size: 15px;
+    margin-bottom: 16px;
+  }
+  .cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-block;
+    padding: 12px 28px;
+    border-radius: 999px;
+    font-size: 16px;
+    font-family: "ZCOOL KuaiLe", sans-serif;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .btn-primary { background: var(--primary); color: #fff; box-shadow: var(--shadow); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(168,85,247,0.45); }
+  .btn-ghost { background: rgba(255,255,255,0.06); color: var(--primary-soft); border: 2px solid var(--line); }
+  .btn-ghost:hover { transform: translateY(-2px); border-color: var(--primary-soft); }
+
+  /* ===== 通用区块 ===== */
+  section { padding: 56px 0; }
+  .sec-title { font-size: 34px; text-align: center; margin-bottom: 8px; color: var(--text); }
+  .sec-sub { text-align: center; color: var(--muted); margin-bottom: 36px; font-size: 15px; }
+
+  /* ===== 关于我 ===== */
+  .about-card {
+    background:
+      radial-gradient(circle, rgba(168, 85, 247, 0.30) 0%, rgba(168, 85, 247, 0) 65%),
+      radial-gradient(circle at 70% 30%, rgba(59, 130, 246, 0.22) 0%, rgba(59, 130, 246, 0) 60%),
+      rgba(20, 18, 35, 0.62);
+    border: none;
+    border-radius: 24px;
+    padding: 34px;
+    box-shadow: var(--shadow);
+  }
+  .about-card p { font-size: 17px; margin-bottom: 22px; }
+  .stats { display: flex; gap: 16px; flex-wrap: wrap; }
+  .stat {
+    flex: 1; min-width: 130px; text-align: center;
+    background: rgba(255,255,255,0.05); border-radius: 18px; padding: 18px 10px;
+  }
+  .stat .num { font-family: "ZCOOL KuaiLe", sans-serif; font-size: 30px; color: var(--primary); }
+  .stat .label { font-size: 14px; color: var(--muted); }
+
+  /* ===== 我在做什么 / 作品 ===== */
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .card {
+    background:
+      radial-gradient(circle, rgba(168, 85, 247, 0.30) 0%, rgba(168, 85, 247, 0) 65%),
+      radial-gradient(circle at 70% 30%, rgba(59, 130, 246, 0.22) 0%, rgba(59, 130, 246, 0) 60%),
+      rgba(20, 18, 35, 0.62);
+    border: none;
+    border-radius: 22px;
+    padding: 26px;
+    box-shadow: var(--shadow);
+    transition: transform .15s ease;
+  }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 18px 42px rgba(168,85,247,0.4); }
+  .card h3 { font-size: 22px; color: var(--primary); margin-bottom: 10px; }
+  .card p { color: var(--muted); font-size: 15px; }
+  .pill {
+    display: inline-block; font-size: 12px; color: var(--primary);
+    background: var(--tag-bg); padding: 3px 12px; border-radius: 999px; margin-bottom: 12px;
+  }
+
+  /* ===== 联系方式 ===== */
+  .contact-card {
+    background: linear-gradient(135deg, var(--primary), var(--primary-soft));
+    color: #fff; border-radius: 26px; padding: 40px; text-align: center;
+    box-shadow: var(--shadow);
+  }
+  .contact-card h3 { font-size: 28px; margin-bottom: 12px; }
+  .contact-card p { opacity: .92; margin-bottom: 22px; }
+  .contact-card .mail {
+    display: inline-block; background: #fff; color: var(--primary);
+    padding: 12px 30px; border-radius: 999px; font-size: 17px;
+    font-family: "ZCOOL KuaiLe", sans-serif;
+  }
+
+  footer { text-align: center; color: var(--muted); font-size: 13px; padding: 30px 0 50px; }
+
+  /* 回到顶部 */
+  #toTop {
+    position: fixed; right: 22px; bottom: 22px;
+    width: 46px; height: 46px; border-radius: 50%;
+    background: var(--primary); color: #fff; border: none; cursor: pointer;
+    font-size: 20px; box-shadow: var(--shadow); opacity: 0; pointer-events: none;
+    transition: opacity .25s ease; z-index: 50;
+  }
+  #toTop.show { opacity: 1; pointer-events: auto; }
+
+  /* 进场动画 */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+  @keyframes blink { 0%,92%,100% { transform: scaleY(1); } 96% { transform: scaleY(0.1); } }
+  @keyframes pulse { 0%,100% { opacity:.5; transform: scale(1);} 50% { opacity:1; transform: scale(1.3);} }
+  @keyframes wave { 0%,100% { transform: rotate(0); } 50% { transform: rotate(15deg); } }
+
+  @media (max-width: 768px) {
+    .hero { padding: 64px 16px 48px; }
+    .hero h1 { font-size: 40px; }
+    .hero .identity { font-size: 16px; }
+    .sec-title { font-size: 28px; }
+    .grid { grid-template-columns: 1fr; }
+    .about-card, .contact-card { padding: 26px 20px; }
+    .avatar { width: 68px; height: 68px; font-size: 34px; margin-bottom: 16px; }
+  }
+</style>
+</head>
+<body>
+
+  <div id="spotlight"></div>
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- 首屏 -->
+  <header class="hero">
+    <span class="orb" style="width:14px;height:14px;top:20%;left:13%;animation-delay:0s;"></span>
+    <span class="orb" style="width:10px;height:10px;top:28%;right:15%;animation-delay:1.4s;"></span>
+    <span class="orb" style="width:18px;height:18px;bottom:16%;left:19%;animation-delay:2.2s;"></span>
+    <span class="orb" style="width:12px;height:12px;bottom:24%;right:21%;animation-delay:.8s;"></span>
+    <div class="avatar">F</div>
+    <h1>Favor</h1>
+    <p class="identity">10 年后端 · 4 年 Vue 前端 · 正在转大模型应用开发工程师</p>
+    <div class="tag">全栈转 AI 实战派</div>
+    <p class="typed-line"><span id="type-rotate"></span><span class="typing-cursor"></span></p>
+    <div class="cta">
+      <a class="btn btn-primary" href="#works">看作品</a>
+      <a class="btn btn-ghost" href="#contact">联系我</a>
+    </div>
+  </header>
+
+  <!-- 关于我 -->
+  <section id="about" class="wrap reveal">
+    <h2 class="sec-title">关于我</h2>
+    <p class="sec-sub">干了十年后端，又写了四年 Vue，现在 All in AI</p>
+    <div class="about-card">
+      <p>我是 Favor，干了 <b>10 年后端</b>、<b>4 年 Vue 前端</b>，现在正全力转型<b>大模型应用开发工程师</b>。喜欢把复杂的业务系统做简单，也喜欢用 AI 给产品加点「聪明」。</p>
+      <p>目前在做的一件大事，是用 <b>RAG</b> 把产品操作知识库改造成能对话、能自查的智能助手——从「翻文档」变成「问一句就有答案」。</p>
+      <div class="stats">
+        <div class="stat"><div class="num">10 年</div><div class="label">后端经验</div></div>
+        <div class="stat"><div class="num">4 年</div><div class="label">Vue 前端</div></div>
+        <div class="stat"><div class="num">转型中</div><div class="label">大模型应用</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 我在做什么 -->
+  <section id="doing" class="wrap reveal">
+    <h2 class="sec-title">我在做什么</h2>
+    <p class="sec-sub">当下在忙的三件事</p>
+    <div class="grid">
+      <div class="card">
+        <span class="pill">进行中</span>
+        <h3>📚 RAG 改造知识库</h3>
+        <p>把静态产品操作文档，变成能问答、能检索的智能知识库，让客服和用户可以「问一句就有答案」。</p>
+      </div>
+      <div class="card">
+        <span class="pill">学习中</span>
+        <h3>🤖 转大模型应用开发</h3>
+        <p>Agent、提示词工程、微调、向量检索——从工程视角一点点啃下大模型应用全链路。</p>
+      </div>
+      <div class="card">
+        <span class="pill">沉淀中</span>
+        <h3>🔗 全栈经验复用</h3>
+        <p>10 年后端 + 4 年 Vue 前端，从 CRUD 到 AI 应用都能搭，把旧经验接到新方向上。</p>
+      </div>
+      <div class="card">
+        <span class="pill">实践中</span>
+        <h3>🛠️ 做能用的 AI 产品</h3>
+        <p>不追概念，只做落地：SaaS 问答助手、AI 音乐鉴赏，都是边做边学的真实项目。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 作品集 -->
+  <section id="works" class="wrap reveal">
+    <h2 class="sec-title">作品集</h2>
+    <p class="sec-sub">两个正在做的 AI 小产品</p>
+    <div class="grid">
+      <div class="card">
+        <h3>💬 SaaS 问答助手</h3>
+        <p>基于大模型的 SaaS 产品智能问答，帮新用户快速上手、少翻文档。<br><span style="color:var(--primary-soft)">🔗 链接待补</span></p>
+      </div>
+      <div class="card">
+        <h3>🎵 AI 音乐鉴赏</h3>
+        <p>用 AI 做音乐理解与鉴赏的尝试项目，让听歌多一层「为什么好听」。</p>
+        <div style="margin-top:14px;">
+          <div style="font-size:14px;color:var(--muted);margin-bottom:6px;">🌧️ 三十度的雨 · Rain</div>
+          <audio controls preload="none" src="rain.mp3" style="width:100%;"></audio>
+          <div style="font-size:14px;color:var(--muted);margin:14px 0 6px;">💼 我想要一份工作 · Work</div>
+          <audio controls preload="none" src="work.mp3" style="width:100%;"></audio>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 联系方式 -->
+  <section id="contact" class="wrap reveal">
+    <h2 class="sec-title">联系我</h2>
+    <p class="sec-sub">合作、交流、或者 just say hi</p>
+    <div class="contact-card">
+      <h3>一起做点有意思的 AI 吧</h3>
+      <p>有合作、有想法、想聊大模型应用，随时找我。</p>
+      <a class="mail" href="mailto:daxia-nv@163.com">daxia-nv@163.com</a>
+    </div>
+  </section>
+
+  <footer>© <span id="year"></span> Favor · 全栈转 AI 实战派</footer>
+
+  <button id="toTop" title="回到顶部">↑</button>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  // 回到顶部
+  const toTop = document.getElementById("toTop");
+  window.addEventListener("scroll", () => {
+    toTop.classList.toggle("show", window.scrollY > 400);
+  });
+  toTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+
+  // 进场动画
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+  }, { threshold: 0.15 });
+  document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+</script>
+
+<script>
+  // 粒子连线背景
+  (function () {
+    var canvas = document.getElementById("bg-canvas");
+    if (!canvas) return;
+    var ctx = canvas.getContext("2d");
+    var w = 0, h = 0, dpr = 1, particles = [], raf = 0;
+    var palette = ["168,85,247", "59,130,246", "236,72,153"]; // 紫 / 钴蓝 / 品红
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var LINK = 150;
+
+    function size() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      canvas.style.width = w + "px";
+      canvas.style.height = h + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var count = Math.max(24, Math.min(120, Math.floor((w * h) / 15000)));
+      particles = [];
+      for (var i = 0; i < count; i++) {
+        particles.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          vx: (Math.random() - 0.5) * 0.45,
+          vy: (Math.random() - 0.5) * 0.45,
+          r: Math.random() * 1.6 + 0.7,
+          c: palette[(Math.random() * palette.length) | 0]
+        });
+      }
+    }
+
+    function frame() {
+      ctx.clearRect(0, 0, w, h);
+      for (var i = 0; i < particles.length; i++) {
+        var p = particles[i];
+        if (!reduce) {
+          p.x += p.vx; p.y += p.vy;
+          if (p.x < 0 || p.x > w) p.vx *= -1;
+          if (p.y < 0 || p.y > h) p.vy *= -1;
+        }
+        ctx.shadowColor = "rgba(" + p.c + ",0.9)";
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(" + p.c + ",0.9)";
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        for (var j = i + 1; j < particles.length; j++) {
+          var q = particles[j];
+          var dx = p.x - q.x, dy = p.y - q.y;
+          var d2 = dx * dx + dy * dy;
+          if (d2 < LINK * LINK) {
+            var a = (1 - Math.sqrt(d2) / LINK) * 0.45;
+            ctx.strokeStyle = "rgba(" + p.c + "," + a.toFixed(3) + ")";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(q.x, q.y);
+            ctx.stroke();
+          }
+        }
+      }
+      if (!reduce) raf = requestAnimationFrame(frame);
+    }
+
+    size();
+    frame();
+    var t;
+    window.addEventListener("resize", function () {
+      clearTimeout(t);
+      t = setTimeout(function () {
+        size();
+        if (reduce) { cancelAnimationFrame(raf); frame(); }
+      }, 200);
+    });
+
+    // 鼠标探照灯
+    var spotlight = document.getElementById("spotlight");
+    if (spotlight) {
+      window.addEventListener("mousemove", function (e) {
+        spotlight.style.setProperty("--x", e.clientX + "px");
+        spotlight.style.setProperty("--y", e.clientY + "px");
+      });
+    }
+
+    // 标签下方轮播打字机（多句轮流：逐字打出 → 停留 → 删除 → 下一句）
+    var rotateEl = document.getElementById("type-rotate");
+    if (rotateEl) {
+      var lines = [
+        "▸ 构建大模型推理引擎 ...",
+        "▸ 优化 RAG 检索增强 ...",
+        "▸ Fine-tuning 领域微调 ...",
+        "▸ 探索 Agent 智能体 ..."
+      ];
+      if (reduce) {
+        rotateEl.textContent = lines[0];
+      } else {
+        var li = 0;
+        (function cycle() {
+          var cur = lines[li % lines.length];
+          var k = 0;
+          (function type() {
+            if (k <= cur.length) {
+              rotateEl.textContent = cur.slice(0, k);
+              k++;
+              setTimeout(type, 90);
+            } else {
+              setTimeout(erase, 2000);
+            }
+          })();
+          function erase() {
+            if (k > 0) {
+              k--;
+              rotateEl.textContent = cur.slice(0, k);
+              setTimeout(erase, 45);
+            } else {
+              li++;
+              setTimeout(cycle, 450);
+            }
+          }
+        })();
+      }
+    }
+
+    // 控制台彩蛋
+    console.log("%c🚀 Favor · 上下文已加载", "font-size:15px;color:#A855F7;");
+  })();
+</script>
+</body>
+</html>
