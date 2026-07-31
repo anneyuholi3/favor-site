@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="fg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#A855F7"/>
+      <stop offset="1" stop-color="#3B82F6"/>
+    </linearGradient>
+  </defs>
+  <circle cx="32" cy="32" r="32" fill="#120E22"/>
+  <circle cx="32" cy="32" r="30" fill="none" stroke="url(#fg)" stroke-width="3"/>
+  <text x="32" y="33" font-family="'ZCOOL KuaiLe','PingFang SC','Microsoft YaHei',sans-serif" font-size="40" font-weight="700" fill="url(#fg)" text-anchor="middle" dominant-baseline="central">F</text>
+</svg>
